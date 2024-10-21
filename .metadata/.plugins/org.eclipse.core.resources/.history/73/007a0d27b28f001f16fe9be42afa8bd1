@@ -1,0 +1,24 @@
+package main;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
+import javax.swing.JPanel;
+
+public class DemoPanel extends JPanel{
+	
+	// Screen Settig
+	public static final int MAX_COL = 15;
+	public static final int MAX_ROW = 10;
+	public static final int NODE_SIZE = 70; //Represent a "Tile" in game
+	public static final int SCREEN_WIDTH = NODE_SIZE * MAX_COL;
+	public static final int SCREEN_HEIGHT = NODE_SIZE * MAX_ROW;
+	
+	public DemoPanel() {
+		
+		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
+		this.setBackground(Color.black);
+		this.setLayout(new GridLayout(MAX_ROW,MAX_COL));
+	}
+}

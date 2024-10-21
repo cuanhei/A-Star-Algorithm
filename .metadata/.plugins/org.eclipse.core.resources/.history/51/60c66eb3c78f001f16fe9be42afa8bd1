@@ -1,0 +1,95 @@
+package main;
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+
+//Node represent a "Tile" in game
+public class Node extends JButton implements ActionListener{
+	
+	Node parent;
+	
+	int col,
+		row,
+		gCost, //Distance between current Node & start Node
+		hCost, //Distance between current Node & goal Node
+		fCost; //Sum of gCost & hCost
+	
+	boolean start,
+			goal,
+			solid,
+			open,
+			checked;
+	
+	public static String status = "Start";
+	
+	public Node(int row, int col) {
+		
+		this.col = col;
+		this.row = row;
+		
+		setBackground(Color.white);
+		setForeground(Color.black);
+		addActionListener(this);
+	}
+	
+	public void setAsStart() {
+		
+		setBackground(Color.red);
+		setForeground(Color.white);
+		setText("Start");
+		start = true;
+	}
+	
+	public void setAsGoal() {
+		
+		setBackground(Color.green);
+		setForeground(Color.black);
+		setText("Goal");
+		goal = true;
+	}
+	
+	public void setAsSolid() {
+		
+		setBackground(Color.black);
+		setForeground(Color.black);
+		solid = true;
+	}
+
+	public void setAsOpen() {
+		open = true;
+	}
+	
+	public void setAsChecked() {
+		
+		if(start == false && goal == false) {
+			setBackground(Color.orange);
+		}
+		checked = true;
+	}
+	
+	public void setAsPath() {
+		setBackground(Color.blue);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		switch(status) {
+			case "Start":
+				setAsStart();
+				break;
+			case "Goal":
+				setAsGoal();
+				break;
+			case "Solid":
+				setAsSolid();
+				break;
+			default:
+				break;
+		}
+	}
+	
+
+}

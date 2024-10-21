@@ -1,0 +1,24 @@
+package main;
+
+import javax.swing.JFrame;
+
+public class Main {
+
+	public static void main(String[] args) {
+
+		//Create window for Graphic Interface [See how it works]
+		JFrame window = new JFrame();
+		DemoPanel dp = new DemoPanel();
+		KeyHandler kH = new KeyHandler(dp);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setResizable(false);
+		window.add(dp);
+		dp.addKeyListener(kH);
+		window.addKeyListener(kH);
+		window.pack();
+		window.setVisible(true);
+		
+		
+	}
+
+}

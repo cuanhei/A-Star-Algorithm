@@ -1,0 +1,105 @@
+package main;
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+
+//Node represent a "Tile" in game
+public class Node extends JButton implements ActionListener{
+	
+	Node parent;
+	
+	int col,
+		row,
+		gCost, //Distance between current Node & start Node
+		hCost, //Distance between current Node & goal Node
+		fCost; //Sum of gCost & hCost
+	
+	boolean start,
+			goal,
+			solid,
+			open,
+			checked;
+	
+	public static int count = 0;
+	
+	public Node(int row, int col) {
+		
+		this.col = col;
+		this.row = row;
+		
+		setBackground(Color.white);
+		setForeground(Color.black);
+		addActionListener(this);
+	}
+	
+	public void setAsStart() {
+		
+		if(!solid && !goal) {
+			setBackground(Color.red);
+			start = true;
+			System.out.println("[+] Please select the Goal point");
+		}
+	}
+	
+	public void setAsGoal() {
+		
+		if(!solid && !start) {
+			setBackground(Color.green);
+			goal = true;
+			System.out.println("[+] Please select the Solid point(s) or Press ENTER to run A* Algorithm");
+		}
+	}
+	
+	public void setAsSolid() {
+		
+		if(!start && !goal) {
+			if(!solid) {
+				setBackground(Color.black);
+				solid = true;
+			}else {
+				setBackground(Color.white);
+				solid = false;
+			}
+		}
+	}
+
+	public void setAsOpen() {
+		open = true;
+	}
+	
+	public void setAsChecked() {
+		
+		if(start == false && goal == false) {
+			setBackground(Color.orange);
+		}
+		checked = true;
+	}
+	
+	public void setAsPath() {
+		setBackground(Color.blue);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		switch(count) {
+			case 0:
+				setAsStart();
+				break;
+			case 1:
+				setAsGoal();
+				break;
+			default:
+				setAsSolid();
+				break;
+		}
+		count++;
+		
+		// Request focus back to the DemoPanel so it can listen to key events
+	    getParent().requestFocusInWindow();
+	}
+	
+
+}

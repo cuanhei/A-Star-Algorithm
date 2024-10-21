@@ -1,0 +1,115 @@
+package main;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.util.ArrayList;
+
+import javax.swing.JPanel;
+
+public class DemoPanel extends JPanel{
+	
+	// Screen Settig
+	public static final int MAX_COL = 10;
+	public static final int MAX_ROW = 10;
+	public static final int NODE_SIZE = 70;
+	public static final int SCREEN_WIDTH = NODE_SIZE * MAX_COL;
+	public static final int SCREEN_HEIGHT = NODE_SIZE * MAX_ROW;
+	
+	public static Node[][] node = new Node[MAX_ROW][MAX_COL];
+	public static Node startNode, goalNode, currentNode;
+	ArrayList<Node> openList = new ArrayList<>();
+	ArrayList<Node> checkedList = new ArrayList<>();
+	
+	boolean goalReached;
+	
+	public DemoPanel() {
+		
+		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
+		this.setBackground(Color.black);
+		this.setLayout(new GridLayout(MAX_ROW,MAX_COL));
+		initialNodes();
+		
+		setStartNode(0,0);
+		setGoalNode(7, 7);
+		
+		//Place solid Node
+		setSolidNode(3,3);
+		setSolidNode(3,4);
+		setSolidNode(3,5);
+		setSolidNode(3,6);
+		setSolidNode(4,3);
+		setSolidNode(5,3);
+		
+		setCostOnNodes();
+	}
+	
+	private void initialNodes() {
+		
+		for(int i = 0; i < MAX_ROW; i++) {
+			for(int j = 0; j < MAX_COL; j++) {
+				node[i][j] = new Node(i,j);
+				this.add(node[i][j]); // Add the component to Panel to Display
+									  // Each time can only add one Component, can't add an array
+			}
+		}
+	}
+	
+	private void setStartNode(int row, int col) {
+		
+		node[row][col].setAsStart();
+		startNode = node[row][col];
+		currentNode = startNode; //By default the Algorithm start from the start Node
+	}
+	
+	private void setGoalNode(int row, int col) {
+		
+		node[row][col].setAsGoal();
+		goalNode = node[row][col];
+	}
+	
+	private void setSolidNode(int row, int col) {
+		
+		node[row][col].setAsSolid();
+	}
+	
+	private void getCost(Node node) {
+		
+		int xDistance, yDistance;
+		
+		// Get G Cost (distance from the start node)
+		xDistance = Math.abs(node.col - startNode.col);
+		yDistance = Math.abs(node.row - startNode.row);
+		node.gCost = xDistance + yDistance;
+		
+		// Get H Cost (distance from the goal node)
+		xDistance = Math.abs(node.col - goalNode.col);
+		yDistance = Math.abs(node.row - goalNode.row);
+		node.hCost = xDistance + yDistance;
+		
+		// Get F Cost (total cost)
+		node.fCost = node.gCost + node.hCost;
+	}
+	
+	private void setCostOnNodes() {
+		
+		for(int i = 0; i < MAX_ROW; i++) {
+			for(int j = 0; j < MAX_COL; j++) {
+				getCost(node[i][j]);
+			}
+		}
+	}
+	
+	private void search() {
+		
+		if(!goalReached) {
+			
+			int row = currentNode.row;
+			int col = currentNode.col;
+			
+			currentNode.setAsChecked();
+			checkedList.add(currentNode);
+			openList.remove(currentNode);
+		}
+	}
+}

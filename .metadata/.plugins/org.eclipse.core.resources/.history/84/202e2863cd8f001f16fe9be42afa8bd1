@@ -1,0 +1,267 @@
+package main;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.util.ArrayList;
+
+import javax.swing.JPanel;
+
+public class DemoPanel extends JPanel{
+	
+	// Screen Setting
+	public static final int MAX_COL = 20;
+	public static final int MAX_ROW = 20;
+	public static final int NODE_SIZE = 30;
+	public static final int SCREEN_WIDTH = NODE_SIZE * MAX_COL;
+	public static final int SCREEN_HEIGHT = NODE_SIZE * MAX_ROW;
+	
+	public static Node[][] node = new Node[MAX_ROW][MAX_COL];
+	public static Node startNode, goalNode, currentNode;
+	ArrayList<Node> openList = new ArrayList<>();
+	ArrayList<Node> checkedList = new ArrayList<>();
+	
+	boolean goalReached;
+	int count;
+	
+	public DemoPanel() {
+		
+		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
+		this.setBackground(Color.black);
+		this.setLayout(new GridLayout(MAX_ROW,MAX_COL));
+		this.addKeyListener(new KeyHandler(this));
+		setFocusable(true);
+		requestFocusInWindow(); // Request focus for key events
+		initialNodes();
+	}
+	
+  
+
+	public void initialNodes() {
+		
+	
+		for(int i = 0; i < MAX_ROW; i++) {
+			for(int j = 0; j < MAX_COL; j++) {
+				node[i][j] = new Node(i,j);
+				this.add(node[i][j]); // Add the component to Panel to Display
+									  // Each time can only add one Component, can't add an array
+			}
+		}
+	}
+	
+	public void reset() {
+	    // Clear all the nodes from the panel
+	    this.removeAll();
+	    
+	    // Reinitialize the node array
+	    initialNodes();
+	    
+	    // Reset other game-related variables
+	    openList.clear();
+	    checkedList.clear();
+	    startNode = null;
+	    goalNode = null;
+	    currentNode = null;
+	    goalReached = false;
+	    count = 0; // Reset node counter for start/goal/solid placement
+
+	    // Revalidate and repaint the panel to reflect the changes
+	    this.revalidate();
+	    this.repaint();
+	}
+
+	private void getCost(Node node) {
+		
+		if(!findStartNode() || !findGoalNode()) 
+			return;
+		
+		
+		int xDistance, yDistance;
+		
+		// Get G Cost (distance from the start node)
+		xDistance = Math.abs(node.col - startNode.col);
+		yDistance = Math.abs(node.row - startNode.row);
+		node.gCost = xDistance + yDistance;
+		
+		// Get H Cost (distance from the goal node)
+		xDistance = Math.abs(node.col - goalNode.col);
+		yDistance = Math.abs(node.row - goalNode.row);
+		node.hCost = xDistance + yDistance;
+		
+		// Get F Cost (total cost)
+		node.fCost = node.gCost + node.hCost;
+	}
+	
+	private boolean findStartNode() {
+		for(Node[] nodes : node) {
+			for(Node nd : nodes) {
+				if(nd.start) {
+					startNode = nd;
+					currentNode = startNode;
+					return true;
+				}
+			}
+		} 
+		return false;
+	}
+	
+	private boolean findGoalNode() {
+		
+		for(Node[] nodes : node) {
+			for(Node nd : nodes) {
+				if(nd.goal) {
+					goalNode = nd;
+					return true;
+				}
+			}
+		} 
+		return false;
+		
+	}
+	public void setCostOnNodes() {
+		
+		for(int i = 0; i < MAX_ROW; i++) {
+			for(int j = 0; j < MAX_COL; j++) {
+				getCost(node[i][j]);
+			}
+		}
+	}
+	
+	public void search() {
+		
+		if(!goalReached) {
+			
+			int row = currentNode.row;
+			int col = currentNode.col;
+			
+			currentNode.setAsChecked();
+			checkedList.add(currentNode);
+			openList.remove(currentNode);
+			
+			//Top Node
+			if(row-1 >= 0)
+				openNode(node[row-1][col]);
+			//Bottom Node
+			if(row+1 < MAX_ROW)
+				openNode(node[row+1][col]);
+			//Right Node
+			if(col+1 < MAX_COL)
+				openNode(node[row][col+1]);
+			//Left Node
+			if(col-1 >= 0) 
+				openNode(node[row][col-1]);
+			
+			//Find best node
+			int bestNodeIndex = 0;
+			int bestNodeFCost = 999;
+			
+			for(int i = 0; i < openList.size(); i++) {
+				
+				//Check if the node F cost is better
+				if(openList.get(i).fCost < bestNodeFCost) {
+					bestNodeFCost = openList.get(i).fCost;
+					bestNodeIndex = i;
+				}
+				//If F Cost equal then check G Cost
+				else if(openList.get(i).fCost == bestNodeFCost) {
+					if(openList.get(i).gCost < openList.get(i).gCost)
+						bestNodeIndex = i;
+				}
+			}
+			
+			currentNode = openList.get(bestNodeIndex);
+			
+			if(currentNode == goalNode)
+				goalReached = true;
+		}
+	}
+	
+	public void autoSearch() {
+		
+		if(startNode == null || goalNode == null) {
+			System.out.println("Please select the Start Point & Goal Point before you press ENTER.");
+			System.out.println("Please Try Again");
+			return;
+		}
+			
+		while(goalReached == false && count < 500) {
+			
+			int row = currentNode.row;
+			int col = currentNode.col;
+			
+			currentNode.setAsChecked();
+			checkedList.add(currentNode);
+			openList.remove(currentNode);
+			
+			//Top Node
+			if(row-1 >= 0)
+				openNode(node[row-1][col]);
+			//Bottom Node
+			if(row+1 < MAX_ROW)
+				openNode(node[row+1][col]);
+			//Right Node
+			if(col+1 < MAX_COL)
+				openNode(node[row][col+1]);
+			//Left Node
+			if(col-1 >= 0) 
+				openNode(node[row][col-1]);
+			
+			//Find best node
+			int bestNodeIndex = 0;
+			int bestNodeFCost = 999;
+			
+			for(int i = 0; i < openList.size(); i++) {
+				
+				//Check if the node F cost is better
+				if(openList.get(i).fCost < bestNodeFCost) {
+					bestNodeFCost = openList.get(i).fCost;
+					bestNodeIndex = i;
+				}
+				//If F Cost equal then check G Cost
+				else if(openList.get(i).fCost == bestNodeFCost) {
+					if(openList.get(i).gCost < openList.get(i).gCost)
+						bestNodeIndex = i;
+				}
+			}
+			
+			currentNode = openList.get(bestNodeIndex);
+			
+			if(currentNode == goalNode) {
+				goalReached = true;
+				trackThePath();
+			}
+			
+			count++;
+		}
+	}
+	
+	private void openNode(Node node) {
+		
+		if(node.open == false && 
+		   node.checked == false &&
+		   node.solid == false) 
+		{
+			node.setAsOpen();
+			node.parent = currentNode;
+			openList.add(node);
+		}
+	}
+	
+	private void trackThePath() {
+		
+		Node current = goalNode;
+		
+		while(current!= startNode) {
+			current = current.parent;
+			
+			if(current!= startNode) {
+				current.setAsPath();
+			}
+		}
+	}
+	
+	  @Override
+	    public boolean isFocusable() {
+	        return true;
+	    }
+}

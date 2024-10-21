@@ -1,0 +1,32 @@
+package main;
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+
+//The Node act as a button
+public class Node extends JButton implements ActionListener{
+	
+	Node parent;
+	int col,row,gCost,hCost,fCost;
+	boolean start,goal,solid,open,checked;
+	
+	public Node(int row, int col) {
+		
+		this.col = col;
+		this.row = row;
+		
+		setBackground(Color.white);
+		setForeground(Color.black);
+		addActionListener(this);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		setBackground(Color.orange);
+	}
+	
+
+}
