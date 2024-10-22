@@ -124,7 +124,8 @@ public class DemoPanel extends JPanel{
 			}
 		}
 	}
-	
+
+	//Manual search incase you want to see how it works step-by-step
 	public void search() {
 		
 		if(!goalReached) {
